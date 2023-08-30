@@ -18,6 +18,13 @@ class OverallQuotaController extends Controller
         return view('overall_quotas.create', compact('sports', 'genders', 'categories'));
     }
 
+    public function index(Request $request)
+    {
+        $overallQuotas = OverallQuota::with(['sport', 'gender', 'category'])->get();
+
+        return view('overall_quotas.index', ['overallQuotas' => $overallQuotas]);
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([

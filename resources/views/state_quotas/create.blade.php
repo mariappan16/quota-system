@@ -98,6 +98,9 @@
             const selectedCategoryId = categorySelect.value;
 
             if (selectedCategoryId && selectedSportId && selectedCategoryId) {
+                const loader = document.getElementById('loader');
+                loader.style.display = 'block';
+            
                 fetch(`/get-states/${selectedSportId}/${selectedGenderId}/${selectedCategoryId}`)
                     .then(response => {
                         if (!response.ok) {
@@ -110,12 +113,15 @@
                     .then(states => {
                         quotaTable.style.display = 'block';
                         loadQuotaTable(states);
+                        loader.style.display = 'none';
                         submitButton.style.display = 'block';
                     })
                     .catch(error => {
                         quotaTable.style.display = 'none';
+                        loader.style.display = 'none';
                         displayErrorMessage(error.message);
                     });
+                    loader.style.display = 'none';
             }
         }
 
@@ -139,12 +145,14 @@
         }
 
         function loadCategories() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
             const selectedSportId = sportSelect.value;
             const selectedGenderId = genderSelect.value;
             displayErrorMessage('');
 
             if (selectedSportId && selectedGenderId) {
-
+                
                 fetch(`/get-categories/${selectedSportId}/${selectedGenderId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -155,11 +163,15 @@
                             option.value = category.id;
                             option.textContent = category.name;
                             categorySelect.appendChild(option);
+                            loader.style.display = 'none';
+
                         });
                     });
             } else {
                 categorySection.style.display = 'none';
+                loader.style.display = 'none';
             }
+            loader.style.display = 'none';
         }
 
         function displayErrorMessage(message) {

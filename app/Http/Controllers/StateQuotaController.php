@@ -25,6 +25,13 @@ class StateQuotaController extends Controller
         return view('state_quotas.create', compact('genders', 'sports', 'categories'));
     }
 
+    public function index()
+    {
+        $stateQuotas = StateQuota::with(['state', 'overallQuota.sport', 'overallQuota.gender', 'overallQuota.category'])->get();
+
+        return view('state_quotas.index', ['stateQuotas' => $stateQuotas]);
+    }
+
     public function getStatesForCategory(Request $request, $sportId, $genderId, $categoryId)
     {
         $overallQuota = OverallQuota::where([
@@ -32,7 +39,7 @@ class StateQuotaController extends Controller
             'gender_id' => $genderId,
             'category_id' => $categoryId,
         ])->first();
-    
+
         if (!$overallQuota) {
             return response()->json(['error' => 'Overall quota not available for this combination.'], 400);
         }
@@ -40,7 +47,6 @@ class StateQuotaController extends Controller
         $states = State::all();
 
         return response()->json($states);
-
     }
 
 
@@ -52,18 +58,26 @@ class StateQuotaController extends Controller
             'category_id' => $request->input('category'),
         ])->first();
 
-
         if (!$overallQuota) {
             return response()->json(['error' => 'Overall quota not available for this combination.'], 400);
         }
+
+        $stateQuotas = [];
         $totalMinQuota = 0;
         $totalMaxQuota = 0;
         $totalReserveQuota = 0;
-        
-        foreach ($request->all() as $key => $value) {
 
+        foreach ($request->all() as $key => $value) {
             if (str_starts_with($key, 'min_quota_')) {
                 $stateId = substr($key, strlen('min_quota_'));
+
+                $stateQuotas[] = [
+                    'state_id' => $stateId,
+                    'min_quota' => $value,
+                    'max_quota' => $request->input('max_quota_' . $stateId),
+                    'reserve_quota' => $request->input('reserve_quota_' . $stateId),
+                ];
+
                 $totalMinQuota += $value;
                 $totalMaxQuota += $request->input('max_quota_' . $stateId);
                 $totalReserveQuota += $request->input('reserve_quota_' . $stateId);
@@ -73,23 +87,16 @@ class StateQuotaController extends Controller
         if ($totalMinQuota < $overallQuota->min_quota || $totalMaxQuota > $overallQuota->max_quota) {
             return response()->json(['error' => 'Quota values are outside the overall quota bounds.'], 400);
         }
-        
+
         if ($totalReserveQuota !== $overallQuota->reserve_quota) {
             return response()->json(['error' => 'Reserve quota does not match the overall reserve quota.'], 400);
         }
 
-        foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'min_quota_')) {
-                $stateId = substr($key, strlen('min_quota_'));
-                $stateQuota = new StateQuota([
-                    'overall_quota_id' => $overallQuota->id,
-                    'state_id' => $stateId,
-                    'min_quota' => $value,
-                    'max_quota' => $request->input('max_quota_' . $stateId),
-                    'reserve_quota' => $request->input('reserve_quota_' . $stateId),
-                ]);
-                $stateQuota->save();
-            }
+        foreach ($stateQuotas as $stateQuotaData) {
+            StateQuota::updateOrCreate(
+                ['overall_quota_id' => $overallQuota->id, 'state_id' => $stateQuotaData['state_id']],
+                $stateQuotaData
+            );
         }
 
         return response()->json(['message' => 'State Quota stored successfully.', 'redirect' => route('state-quotas.create')], 200);

@@ -177,6 +177,8 @@
         };
 
         function loadCategories() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
             const selectedSportId = sportSelect.value;
             const selectedGenderId = genderSelect.value;
             quotaSummary.style.display = 'none';
@@ -188,7 +190,6 @@
             maxQuotaInput.value = '';
             reserveQuotaInput.value = '';
             if (selectedSportId && selectedGenderId) {
-
                 fetch(`/get-categories/${selectedSportId}/${selectedGenderId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -199,11 +200,13 @@
                             option.value = category.id;
                             option.textContent = category.name;
                             categorySelect.appendChild(option);
+                            loader.style.display = 'none';
                         });
                     });
             } else {
                 categorySection.style.display = 'none';
             }
+            loader.style.display = 'none';
         }
     </script>
 @endsection
