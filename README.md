@@ -24,6 +24,7 @@ The Quota Management System is a web application that allows administrators to m
    cd quota-management-system
 
 2.**Install Dependencies:**
+
     ```bash
    composer install
    npm install
@@ -32,14 +33,17 @@ The Quota Management System is a web application that allows administrators to m
 - Create a copy of the .env.example file and name it .env. Configure your database connection and other environment variables as needed.
 
 4.**Generate Application Key:**
+
     ```bash
     php artisan key:generate
 
 5.**Run Migrations and Seeders:**
-  ```bash
+
+   ```bash
     php artisan migrate --seed
 
 6.**Run the Development Server:**
+
    ```bash
     php artisan serve
 
