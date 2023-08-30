@@ -205,8 +205,9 @@
                     });
             } else {
                 categorySection.style.display = 'none';
+                loader.style.display = 'none';
+
             }
-            loader.style.display = 'none';
         }
     </script>
 @endsection

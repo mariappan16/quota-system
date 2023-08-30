@@ -93,13 +93,14 @@
 
 
         function loadStates() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
             const selectedSportId = sportSelect.value;
             const selectedGenderId = genderSelect.value;
             const selectedCategoryId = categorySelect.value;
 
             if (selectedCategoryId && selectedSportId && selectedCategoryId) {
-                const loader = document.getElementById('loader');
-                loader.style.display = 'block';
+               
             
                 fetch(`/get-states/${selectedSportId}/${selectedGenderId}/${selectedCategoryId}`)
                     .then(response => {
@@ -113,7 +114,6 @@
                     .then(states => {
                         quotaTable.style.display = 'block';
                         loadQuotaTable(states);
-                        loader.style.display = 'none';
                         submitButton.style.display = 'block';
                     })
                     .catch(error => {
@@ -121,7 +121,8 @@
                         loader.style.display = 'none';
                         displayErrorMessage(error.message);
                     });
-                    loader.style.display = 'none';
+            } else {
+                loader.style.display = 'none';
             }
         }
 
@@ -142,6 +143,8 @@
                 `;
                 tableBody.appendChild(tr);
             });
+            loader.style.display = 'none';
+
         }
 
         function loadCategories() {
@@ -171,7 +174,6 @@
                 categorySection.style.display = 'none';
                 loader.style.display = 'none';
             }
-            loader.style.display = 'none';
         }
 
         function displayErrorMessage(message) {
@@ -183,6 +185,8 @@
 
 
         function validateForm(event) {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
             const selectedSportId = sportSelect.value;
             const selectedGenderId = genderSelect.value;
             const selectedCategoryId = categorySelect.value;
@@ -190,6 +194,7 @@
 
             if (!selectedSportId || !selectedGenderId || !selectedCategoryId) {
                 displayErrorMessage('Please select all the required fields.');
+                loader.style.display = 'none';
                 return false;
             }
 
@@ -201,7 +206,7 @@
                 if (isNaN(value) || value < 0) {
                     valid = false;
                     displayErrorMessage('Please enter valid non-negative values for quota fields.');
-                    return false;
+                    loader.style.display = 'none';
                 }
             });
 
@@ -217,6 +222,7 @@
 
             if (minQuota > maxQuota || maxQuota < reserveQuota) {
                 displayErrorMessage('Quota values must follow: min < max <= reserve.');
+                loader.style.display = 'none';
                 return false;
             }
 
@@ -254,11 +260,15 @@
                     if (totalMinQuota < overallQuotaData.min_quota || totalMaxQuota > overallQuotaData.max_quota ||
                         totalMinQuota > overallQuotaData.max_quota) {
                         displayErrorMessage('Quota values are outside the overall quota bounds.');
+                        loader.style.display = 'none';
+
                         return false;
                     }
 
                     if (totalReserveQuota !== overallQuotaData.reserve_quota) {
                         displayErrorMessage('Reserve quota does not match the overall reserve quota.');
+                        loader.style.display = 'none';
+
                         return false;
                     }
 
@@ -276,19 +286,22 @@
                         .then(data => {
                             if (data.message) {
                                 document.getElementById('success-message').textContent = data.message;
+                                loader.style.display = 'none';
                                 window.location.href = data.redirect;
-
                             } else if (data.error && data.error.length > 0) {
                                 var errorList = document.getElementById('error-list');
                                 errorList.innerHTML = '<ul> ' + data.error + '</ul>';
+                                loader.style.display = 'none';
                             }
                         })
                         .catch(error => {
                             console.error('An error occurred:', error);
+                            loader.style.display = 'none';
                         });
                 })
                 .catch(error => {
                     console.error('An error occurred:', error);
+                    loader.style.display = 'none';
                     return false;
                 });
         }
