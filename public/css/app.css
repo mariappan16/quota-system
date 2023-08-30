@@ -1,4 +1,4 @@
-
+        
 *{
     padding: 0;
     margin: 0;
@@ -183,8 +183,4 @@
 
 #quota-validation-error, #error-list {
     color:red;
-}
-
-.overall-reserve-quota {
-    margin-bottom: unset;
 }
