@@ -8,12 +8,13 @@ The Quota Management System is a web application that allows administrators to m
 
 ## Features
 
-- Create and manage quotas for sports, genders, and categories.
-- Dynamically load categories based on selected sport and gender.
-- Enter and validate quota values for different states.
-- Perform client-side and server-side validation for quota values.
-- Display overall quota information retrieved from the server.
-- Submit quota data to the server and receive success/error messages.
+- **State Quota List:** The first tab provides an overview of all state-wise quotas that have been created. Here, you can easily view and track the quotas set for different states.
+
+- **Overall Quota List:** The second tab displays the list of overall quotas that have been defined. This gives you an overview of the quotas established for various combinations of sports, gender, and categories.
+
+- **Create Overall Quota:** In the third tab, you can create an overall quota for specific sports, gender, and category combinations. Once the data is created, you'll be automatically redirected to the next tab for creating state quotas.
+
+- **Create State Quota:** The fourth tab enables you to create state quotas for specific sports, gender, and category combinations. State quotas can only be created if there is an available overall quota for the chosen combination. Additionally, the values for state quotas will be validated against the corresponding overall quota for that combination.
 
 ## Getting Started
 
